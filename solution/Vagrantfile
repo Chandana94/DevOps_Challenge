@@ -1,0 +1,23 @@
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+config.vm.box = "dummy"
+config.vm.provider :aws do |aws, override|
+config.vm.network :forwarded_port, guest:5000,host:5000
+aws.access_key_id = "AKIAJ7UCYWAU3SHP5VHA"
+aws.secret_access_key = "4YY62FjeDyyw9qNZ1DFUuJwQQymC2XMwIhZh7Dgt"
+aws.security_groups = ["launch-wizard-16"]
+aws.keypair_name = "deloitte"
+aws.region = "ap-south-1"
+aws.instance_type = "t2.micro"
+aws.ami = "ami-0a574895390037a62"
+override.ssh.username = "ubuntu"
+override.ssh.private_key_path = "/home/ubuntu/deloitte.pem"
+
+
+config.vm.provision "ansible" do |ansible|
+ansible.verbose = "v"
+ansible.playbook = "app.yml"
+end
+end
+end
+

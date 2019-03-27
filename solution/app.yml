@@ -1,0 +1,38 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: no
+  pre_tasks:
+    - name: install python2
+      raw: apt-get install python-simplejson -y
+    - name: Update
+      apt:
+        update_cache: yes
+        state: latest
+    - name: install pipe
+      raw: apt install python-pip -y
+  tasks:
+    - user: name=devops comment="devops non-privileged user" home=/tmp shell=/bin/false system=yes 
+    - name: Update
+      apt:
+        update_cache: yes
+        state: latest
+    - pip:
+        name: Flask
+    - pip:
+        name: Werkzeug
+
+    - file:            
+        path: /home/ubuntu/devops
+        state: directory
+    - file:
+        state: absent
+        path: /home/ubuntu/devops/devops-challenge
+    - git:
+        repo: 'https://bitbucket.org/azneita/devops-challenge.git'
+        dest: /home/ubuntu/devops/devops-challenge
+    - name: "Starting Python Application"
+#      command: nohup python /home/ubuntu/devops/devops-challenge/app.py -mSimpleHTTPServer </dev/null >/dev/null 2>&1 &
+      command: nohup /home/ubuntu/devops/devops-challenge/app.py
+      async: 10000
+      poll: 0
